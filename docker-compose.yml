@@ -1,0 +1,54 @@
+# version: ‘3.7’
+
+services:
+#docker in docker container
+  dind:
+    image: docker:dind
+    container_name: dind
+    networks: 
+      jenkins_to_docker:
+        aliases:
+          - docker			#provide network alias name
+    privileged: true
+    user: root
+    environment: 
+      - DOCKER_TLS_CERTDIR=/certs
+    volumes: 
+      - docker-certs-ca:/certs/ca	#maps the certs directories inside the container to a docker volume
+      - docker-certs-client:/certs/client
+      - jenkins-data:/var/jenkins_home	#maps the jenkins_home directory in the container to a jenkins data volume for other docker containers to be able to access.
+    expose:
+      - 2376				#access point for the docker image
+
+#Jenkins container
+  jenkins:
+    image: jenkins/jenkins:lts-jdk11
+    container_name: jenkins
+    restart: unless-stopped		#always restarts the container
+    networks: 
+      - jenkins_to_docker		#conects to the bridge network to allow for communication between containers
+    user: root
+    environment:
+      - DOCKER_HOST="tcp://docker:2376"
+      - DOCKER_CERT_PATH=/certs/client
+      - DOCKER_TLS_VERIFY=1
+    volumes:
+      - docker-certs-client:/certs/client:ro	#maps the jenkins directory to the docker volume
+      - jenkins-data:/var/jenkins_home		
+      - /usr/bin/docker:/usr/bin/docker
+    ports:
+      - 8080:8080			#assigns the local port 8080 to the port 8080 of the container
+      - 50000:50000			#allows for inbound jenkins communication
+    depends_on: 
+      - dind				#requires docker in docker (dind) to be ready
+
+volumes:
+  docker-certs-ca:
+  docker-certs-client:
+  jenkins-data:
+
+
+networks:
+  jenkins_to_docker:
+    driver: bridge
+
