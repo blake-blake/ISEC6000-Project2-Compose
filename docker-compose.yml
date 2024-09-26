@@ -24,7 +24,7 @@ services:
   jenkins:
     image: jenkins/jenkins:lts-jdk11
     container_name: jenkins
-    restart: unless-stopped		#always restarts the container
+    #restart: unless-stopped		#always restarts the container - removed as creating issues when starting and stopping docker.
     networks: 
       - jenkins_to_docker		#conects to the bridge network to allow for communication between containers
     user: root
@@ -37,8 +37,9 @@ services:
       - jenkins-data:/var/jenkins_home		
       - /usr/bin/docker:/usr/bin/docker
     ports:
-      - 8080:8080			#assigns the local port 8080 to the port 8080 of the container
+      - 8090:8080			#assigns the local port 8080 to the port 8080 of the container
       - 50000:50000			#allows for inbound jenkins communication
+      - 8081:8081			#expose port for app.js
     depends_on: 
       - dind				#requires docker in docker (dind) to be ready
 
