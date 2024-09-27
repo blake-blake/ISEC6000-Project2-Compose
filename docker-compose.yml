@@ -9,7 +9,7 @@ services:
       jenkins_to_docker:
         aliases:
           - docker			#provide network alias name
-    privileged: true
+    privileged: true			#allow for unrestricted communication from Jenkins
     user: root
     environment: 
       - DOCKER_TLS_CERTDIR=/certs
