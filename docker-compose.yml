@@ -19,6 +19,11 @@ services:
       - jenkins-data:/var/jenkins_home	#maps the jenkins_home directory in the container to a jenkins data volume for other docker containers to be able to access.
     expose:
       - 2376				#access point for the docker image
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"    
+        max-file: "10"
 
 #Jenkins container
   jenkins:
@@ -36,12 +41,18 @@ services:
       - docker-certs-client:/certs/client:ro	#maps the jenkins directory to the docker volume
       - jenkins-data:/var/jenkins_home		
       - /usr/bin/docker:/usr/bin/docker
+      - /home/blake/Documents/Assignment 2/ISEC6000-Project2-Compose/Logs:/var/jenkins_home/logs
     ports:
       - 8090:8080			#assigns the local port 8080 to the port 8080 of the container
       - 50000:50000			#allows for inbound jenkins communication
       - 8081:8081			#expose port for app.js
     depends_on: 
       - dind				#requires docker in docker (dind) to be ready
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"    
+        max-file: "10"
 
 volumes:
   docker-certs-ca:
