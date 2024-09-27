@@ -41,7 +41,7 @@ services:
       - docker-certs-client:/certs/client:ro	#maps the jenkins directory to the docker volume
       - jenkins-data:/var/jenkins_home		
       - /usr/bin/docker:/usr/bin/docker
-      - /home/blake/Documents/Assignment 2/ISEC6000-Project2-Compose/Logs:/var/jenkins_home/logs
+      - /home/blake/Documents/Assignment 2/ISEC6000-Project2-Compose/Logs:/var/jenkins_home/logs #maps jenkins logs to easy to find location on local machine
     ports:
       - 8090:8080			#assigns the local port 8080 to the port 8080 of the container
       - 50000:50000			#allows for inbound jenkins communication
